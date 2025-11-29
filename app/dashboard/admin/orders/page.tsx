@@ -5,10 +5,13 @@ import { DashboardShell } from '@/components/layout/dashboard-shell'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { adminOrders } from '@/lib/mock-data'
+import { Order } from '@/types/order'
+import { OrderDetailsModal } from '@/components/orders/order-details-modal'
 
 export default function AdminOrdersPage() {
   const [statusFilter, setStatusFilter] = useState('همه')
   const [search, setSearch] = useState('')
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
 
   const filtered = useMemo(() => {
     return adminOrders.filter((order) => {
@@ -54,7 +57,11 @@ export default function AdminOrdersPage() {
             </thead>
             <tbody>
               {filtered.map((order) => (
-                <tr key={order.id} className="border-t border-border/60">
+                <tr
+                  key={order.id}
+                  className="cursor-pointer border-t border-border/60 transition hover:bg-muted/50"
+                  onClick={() => setSelectedOrder(order as Order)}
+                >
                   <td className="p-2 font-semibold">{order.id}</td>
                   <td className="p-2">{order.customer}</td>
                   <td className="p-2">{order.type}</td>
@@ -66,6 +73,7 @@ export default function AdminOrdersPage() {
           </table>
         </div>
       </Card>
+      <OrderDetailsModal open={!!selectedOrder} onClose={() => setSelectedOrder(null)} order={selectedOrder ?? undefined} />
     </DashboardShell>
   )
 }

@@ -1,9 +1,16 @@
+'use client'
+
+import { useState } from 'react'
 import { DashboardShell } from '@/components/layout/dashboard-shell'
 import { Card } from '@/components/ui/card'
 import { PriceChart } from '@/components/charts/price-chart'
 import { adminOrders, adminStats } from '@/lib/mock-data'
+import { OrderDetailsModal } from '@/components/orders/order-details-modal'
+import { Order } from '@/types/order'
 
 export default function AdminOverviewPage() {
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+
   return (
     <DashboardShell title="داشبورد مدیر" description="نمای کلی عملیات روزانه">
       <div className="grid gap-4 md:grid-cols-3">
@@ -28,7 +35,11 @@ export default function AdminOverviewPage() {
         <h3 className="mb-4 text-lg font-semibold">سفارش‌های نیازمند بررسی</h3>
         <div className="space-y-3">
           {adminOrders.map((order) => (
-            <div key={order.id} className="rounded-xl border border-border/70 p-4">
+            <button
+              key={order.id}
+              className="w-full rounded-xl border border-border/70 p-4 text-right transition hover:border-border hover:bg-muted/40"
+              onClick={() => setSelectedOrder(order as Order)}
+            >
               <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                 <div>
                   <p className="font-semibold">{order.id}</p>
@@ -39,10 +50,11 @@ export default function AdminOverviewPage() {
                   <p>{order.status}</p>
                 </div>
               </div>
-            </div>
+            </button>
           ))}
         </div>
       </Card>
+      <OrderDetailsModal open={!!selectedOrder} onClose={() => setSelectedOrder(null)} order={selectedOrder ?? undefined} />
     </DashboardShell>
   )
 }
