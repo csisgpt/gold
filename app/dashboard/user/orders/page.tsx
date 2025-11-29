@@ -5,9 +5,12 @@ import { DashboardShell } from '@/components/layout/dashboard-shell'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { userOrders } from '@/lib/mock-data'
+import { OrderDetailsModal } from '@/components/orders/order-details-modal'
+import { Order } from '@/types/order'
 
 export default function OrdersPage() {
   const [statusFilter, setStatusFilter] = useState('همه')
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
 
   const filteredOrders = userOrders.filter((order) => (statusFilter === 'همه' ? true : order.status === statusFilter))
 
@@ -51,7 +54,11 @@ export default function OrdersPage() {
             </thead>
             <tbody>
               {filteredOrders.map((order) => (
-                <tr key={order.id} className="border-t border-border/60">
+                <tr
+                  key={order.id}
+                  className="cursor-pointer border-t border-border/60 transition hover:bg-muted/50"
+                  onClick={() => setSelectedOrder(order as Order)}
+                >
                   <td className="p-2 font-semibold">{order.id}</td>
                   <td className="p-2">{order.type}</td>
                   <td className="p-2">{order.amount.toLocaleString()} تومان</td>
@@ -63,6 +70,7 @@ export default function OrdersPage() {
           </table>
         </div>
       </Card>
+      <OrderDetailsModal open={!!selectedOrder} onClose={() => setSelectedOrder(null)} order={selectedOrder ?? undefined} />
     </DashboardShell>
   )
 }
